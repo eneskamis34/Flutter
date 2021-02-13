@@ -2,78 +2,138 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Student.dart';
 
 void main() {
-  runApp(MaterialApp(
-      home: MyApp())); //materialApp
+  runApp(MaterialApp(home: MyApp())); //materialApp
 }
 
-class MyApp extends StatelessWidget {
-  String karsilamaMesaji = "Öğrenci Takip Sistemi";
-  String mesaj = "Gövde Kısmı";
-  String sonuc = "";
-  List<Student> students = [Student("Enes","Kamış",70),Student("Ayşe","Sucu",49),Student("İrem","Yılmaz",30)];
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-  //var ogrenciler = ["Enes Kamış","Fatma","Ayşe","Sultan","İrem"];
+class _MyAppState extends State<MyApp> {
+  String karsilamaMesaji = "Öğrenci Takip Sistemi";
+
+  String mesaj = "Gövde Kısmı";
+
+  String sonuc = "";
+
+  Student selectedStudent = Student.WithId(0, "", "", 0);
+
+  List<Student> students = [
+    Student("Enes", "Kamış", 70),
+    Student("Ayşe", "Sucu", 49),
+    Student("İrem", "Yılmaz", 30)
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(karsilamaMesaji),
-      ),
-      body: buildBody(context)
-    );
-  }
-  String puanHesapla(int puan)
-  {
-    if (puan >= 50) {
-      sonuc = "Geçti";
-    } else if (puan >= 40 && puan <= 49) {
-      sonuc = "Bütünlemeye Kaldı";
-    } else {
-      sonuc = "Kaldı";
-    }
-    return sonuc;
+        appBar: AppBar(
+          title: Text(karsilamaMesaji),
+        ),
+        body: buildBody(context));
   }
 
-  String mesajGoster(BuildContext context,String sonuc)
-  {
+
+
+  String mesajGoster(BuildContext context, String sonuc) {
     var alert = AlertDialog(
-      title: Text("Sınav Sonucu"),
+      title: Text("İşlem Sonucu"),
       content: Text(sonuc),
     );
-    showDialog(
-        context: context, builder: (BuildContext context) => alert);
+    showDialog(context: context, builder: (BuildContext context) => alert);
   }
 
   Widget buildBody(BuildContext context) {
     return Column(
-      children:<Widget> [
+      children: <Widget>[
         Expanded(
-            child:ListView.builder(
-              itemCount: students.length,
-              itemBuilder: (BuildContext context, int index){
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(students[index].photoLink),
-                  ),
-                  title: Text(students[index].firstName+" "+students[index].lastName),
-                  subtitle: Text("Sınavdan Aldığı Not: "+ students[index].grade.toString()),
-                  trailing: buildStatusIcon(students[index].grade),
-                  onTap:(){
-                    print(students[index].firstName+" "+students[index].lastName);
-                  },
-                );
+            child: ListView.builder(
+          itemCount: students.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(students[index].photoLink),
+              ),
+              title: Text(
+                  students[index].firstName + " " + students[index].lastName),
+              subtitle: Text("Sınavdan Aldığı Not: " +
+                  students[index].grade.toString() +
+                  " [" +
+                  students[index].getStatus +
+                  " ]"),
+              trailing: buildStatusIcon(students[index].grade),
+              onTap: () {
+                setState(() {
+                  selectedStudent = students[index];
+                });
+                print(selectedStudent);
               },
-            )
-        ),
-        Center(
-          child: RaisedButton(
-            child: Text("Sonucu Gör"),
-            onPressed: () {
-              String sonuc = puanHesapla(55);
-              mesajGoster(context, sonuc);
-            },
-          ),
-        ),
+            );
+          },
+        )),
+        Text("Seçili Öğrenci: " + selectedStudent.firstName),
+        Row(
+          children: [
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 2,
+              child:RaisedButton(
+                color: Colors.deepOrangeAccent,
+                  child: Row(
+                    children: [
+                      Icon(Icons.add),
+                      SizedBox(width: 5.0),
+                      Text("Yeni Öğrenci"),
+                    ],
+                  ),
+                  onPressed: () {
+                    String sonuc = "Yeni Öğrenci Eklendi";
+                    mesajGoster(context, sonuc);
+                  },
+                ),
+              ),
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 2,
+              child:RaisedButton(
+                color: Colors.amber,
+                child: Row(
+                  children: [
+                    Icon(Icons.update),
+                    SizedBox(width: 5.0),
+                    Text("Güncelle"),
+                  ],
+                ),
+                onPressed: () {
+                  String sonuc = "Öğrenci Güncellendi";
+                  mesajGoster(context, sonuc);
+                },
+              ),
+            ),
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 1,
+              child:RaisedButton(
+                color: Colors.blue,
+                child: Row(
+                  children: [
+                    Icon(Icons.delete),
+                    SizedBox(width: 5.0),
+                    Text("Sil"),
+                  ],
+                ),
+                onPressed: () {
+                  setState(() {
+                    students.remove(selectedStudent);
+                  });
+                  String sonuc = selectedStudent.firstName+" İsimli Öğrenci Başarıyla Silindi";
+                  mesajGoster(context, sonuc);
+                },
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
@@ -88,5 +148,3 @@ class MyApp extends StatelessWidget {
     }
   }
 }
-
-
