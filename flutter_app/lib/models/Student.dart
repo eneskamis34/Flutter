@@ -6,6 +6,9 @@ class Student {
   String _status;
   String photoLink;
 
+  Student.withOutInfo()
+  {}
+
   Student.WithId(int id,String firstName,String lastName,int grade){
     this.id = id;
     this.firstName = firstName;

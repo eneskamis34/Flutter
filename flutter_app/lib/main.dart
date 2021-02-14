@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Student.dart';
+import 'package:flutter_app/screens/student_add.dart';
 
 void main() {
   runApp(MaterialApp(home: MyApp())); //materialApp
@@ -20,7 +21,7 @@ class _MyAppState extends State<MyApp> {
   Student selectedStudent = Student.WithId(0, "", "", 0);
 
   List<Student> students = [
-    Student("Enes", "Kamış", 70),
+    Student("Enes", "Enes", 70),
     Student("Ayşe", "Sucu", 49),
     Student("İrem", "Yılmaz", 30)
   ];
@@ -88,8 +89,7 @@ class _MyAppState extends State<MyApp> {
                     ],
                   ),
                   onPressed: () {
-                    String sonuc = "Yeni Öğrenci Eklendi";
-                    mesajGoster(context, sonuc);
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>StudentAdd(students)));
                   },
                 ),
               ),
